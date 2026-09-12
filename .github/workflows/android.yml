@@ -57,6 +57,11 @@ jobs:
         with:
           gradle-version: '9.7.1'
 
+      - name: Set BD PBX app name
+        run: |
+          sed -i 's#<string name="app_name" translatable="false">baresip</string>#<string name="app_name" translatable="false">BD PBX</string>#' app/src/main/res/values/strings.xml
+          sed -i 's#<string name="app_name_plus" translatable="false">baresip+</string>#<string name="app_name_plus" translatable="false">BD PBX</string>#' app/src/main/res/values/strings.xml
+
       - name: Build Debug APK
         run: gradle assembleDebug --stacktrace
 
