@@ -85,6 +85,17 @@ class ConnectionService : ConnectionService() {
                 connection.setCallerDisplayName(contactName, TelecomManager.PRESENTATION_ALLOWED)
 
             connection.setRinging()
+            IncomingCallNotifier.show(this, callp, contactName)
+            try {
+                val incomingIntent = Intent(this, IncomingCallActivity::class.java).apply {
+                    putExtra("callp", callp)
+                    putExtra("caller", contactName)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                }
+                startActivity(incomingIntent)
+            } catch (e: Exception) {
+                Log.w(TAG, "Direct incoming call screen launch blocked; full-screen notification remains active", e)
+            }
             if (ua.account.answerMode == Api.ANSWERMODE_AUTO) {
                 Log.d(TAG, "Auto-answering call $callp")
                 Handler(Looper.getMainLooper()).postDelayed({
@@ -183,6 +194,7 @@ class ConnectionService : ConnectionService() {
         }
 
         override fun onAnswer() {
+            IncomingCallNotifier.cancel(this@ConnectionService)
             Log.d(TAG, "Telecom Connection onAnswer $callp")
             val answerIntent = Intent(this@ConnectionService, BaresipService::class.java)
             answerIntent.action = "Call Answer"
@@ -199,6 +211,7 @@ class ConnectionService : ConnectionService() {
         }
 
         override fun onReject() {
+            IncomingCallNotifier.cancel(this@ConnectionService)
             Log.d(TAG, "Telecom Connection onReject $callp")
             Api.ua_hangup(uap, callp, 486, "Rejected")
             setDisconnected(DisconnectCause(DisconnectCause.REJECTED))
@@ -211,6 +224,7 @@ class ConnectionService : ConnectionService() {
             if (now - lastDisconnectTime < 500) return
             lastDisconnectTime = now
 
+            IncomingCallNotifier.cancel(this@ConnectionService)
             Log.d(TAG, "Telecom Connection onDisconnect $callp")
 
             if (callp == 0L) {
@@ -228,6 +242,7 @@ class ConnectionService : ConnectionService() {
         }
 
         override fun onAbort() {
+            IncomingCallNotifier.cancel(this@ConnectionService)
             Log.d(TAG, "Telecom Connection onAbort $callp")
             if (callp != 0L) {
                 Api.ua_hangup(uap, callp, 0, "")
@@ -284,13 +299,10 @@ class ConnectionService : ConnectionService() {
             Log.d(TAG, "Telecom Connection onHold $callp")
             val call = Call.ofCallp(callp)
             if (call != null && !call.conferenceCall) {
-                // 1. Force SIP Signaling
                 if (Api.call_hold(call.callp, true)) {
-                    // 2. Sync Call object state
                     call.onhold = true
                     call.callOnHold.value = true
                     call.showOnHoldNotice.value = true
-                    // 3. Tell Telecom the move is complete
                     setOnHold()
                 }
                 else
@@ -302,13 +314,10 @@ class ConnectionService : ConnectionService() {
             Log.d(TAG, "Telecom Connection onUnhold $callp")
             val call = Call.ofCallp(callp)
             if (call != null && !call.conferenceCall) {
-                // 1. Force SIP Signaling
                 if (Api.call_hold(call.callp, false)) {
-                    // 2. Sync Call object state
                     call.onhold = false
                     call.callOnHold.value = false
                     call.showOnHoldNotice.value = false
-                    // 3. Tell Telecom we are active
                     setActive()
                 }
                 else
