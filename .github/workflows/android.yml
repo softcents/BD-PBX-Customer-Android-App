@@ -47,9 +47,9 @@ jobs:
 
       - name: Verify native libraries
         run: |
-          test -f distribution/baresip/lib/armeabi-v7a/libbaresip.a
-          test -f distribution/baresip/lib/arm64-v8a/libbaresip.a
-          test -f distribution/baresip/lib/x86_64/libbaresip.a
+          test -f "$GITHUB_WORKSPACE/distribution/baresip/lib/armeabi-v7a/libbaresip.a"
+          test -f "$GITHUB_WORKSPACE/distribution/baresip/lib/arm64-v8a/libbaresip.a"
+          test -f "$GITHUB_WORKSPACE/distribution/baresip/lib/x86_64/libbaresip.a"
           echo "Native Baresip libraries are ready"
 
       - name: Set up Gradle 9.7.1
