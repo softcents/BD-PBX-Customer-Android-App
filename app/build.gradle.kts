@@ -10,11 +10,11 @@ configure<ApplicationExtension> {
     compileSdk = 37
     ndkVersion = "29.0.14206865"
     defaultConfig {
-        applicationId = "com.tutpro.baresip"
+        applicationId = "com.softcents.bdpbx"
         minSdk = 28
         targetSdk = 36
-        versionCode = 552
-        versionName = "90.2.1"
+        versionCode = 553
+        versionName = "90.2.2"
         @Suppress("UnstableApiUsage")
         externalNativeBuild {
             cmake {
