@@ -95,7 +95,7 @@ class ConnectionService : ConnectionService() {
                 }
                 startActivity(incomingIntent)
             } catch (e: Exception) {
-                Log.w(TAG, "Direct incoming call screen launch blocked; full-screen notification remains active", e)
+                Log.w(TAG, "Direct incoming call screen launch blocked; full-screen notification remains active: " + e.message)
             }
             if (ua.account.answerMode == Api.ANSWERMODE_AUTO) {
                 Log.d(TAG, "Auto-answering call $callp")
