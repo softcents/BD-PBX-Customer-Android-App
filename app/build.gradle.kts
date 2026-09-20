@@ -10,11 +10,11 @@ configure<ApplicationExtension> {
     compileSdk = 37
     ndkVersion = "29.0.14206865"
     defaultConfig {
-        applicationId = "com.softcents.bdpbx"
+        applicationId = "com.softcents.bdpbx.customer"
         minSdk = 28
         targetSdk = 36
-        versionCode = 553
-        versionName = "90.2.2"
+        versionCode = 554
+        versionName = "90.2.3"
         @Suppress("UnstableApiUsage")
         externalNativeBuild {
             cmake {
